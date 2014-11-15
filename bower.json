@@ -1,0 +1,17 @@
+{
+  "name": "angular-puzzle15",
+  "private": true,
+  "version": "3.1.0",
+  "description": "Little angular game",
+  "homepage": "https://github.com/Nadrieril/angular-puzzle15",
+  "dependencies": {
+    "angular": "1.3.x",
+    "angular-animate": "",
+    "angular-bootstrap": "",
+    "angular-mocks": "",
+    "animate.css": "",
+    "bootstrap": "",
+    "html5-boilerplate": "",
+    "lodash": ">=2"
+  }
+}
