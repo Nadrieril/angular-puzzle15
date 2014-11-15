@@ -34,7 +34,7 @@ angular.module('Game', ['Grid', 'ngCookies'])
    * event (interesting events are listed in the Keyboard service)
    * For every event, we'll:
    *  1. look up the appropriate vector
-   *  2. find the furthest possible locations for each tile and 
+   *  2. find the furthest possible locations for each tile and
    *     the next tile over
    *  3. find any spots that can be 'merged'
    *    a. if we find a spot that can be merged:
@@ -100,7 +100,7 @@ angular.module('Game', ['Grid', 'ngCookies'])
       }
 
       if (hasMoved) {
-        GridService.randomlyInsertNewTile();
+        // GridService.randomlyInsertNewTile();
 
         if (self.win || !self.movesAvailable()) {
           self.gameOver = true;
