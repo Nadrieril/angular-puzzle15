@@ -30,7 +30,7 @@ $text-color: #776E65;
 $bright-text-color: #f9f6f2;
 
 // DON'T EDIT BELOW
-$transition-time: 170ms;
+$transition-time: 100ms;
 
 .container {
   max-width: 600px;
@@ -175,7 +175,7 @@ h1.title {
 }
 
 #content {
-   
+
 }
 
 #game-container {
@@ -199,7 +199,7 @@ h1.title {
   font-weight: bold;
   overflow: hidden;
   box-sizing: border-box;
-  
+
   &.ng-enter {
     @include transition(all 1000ms ease-in);
     @include transform(translate(0, 100%));
@@ -233,7 +233,7 @@ h1.title {
 
 @mixin game-board($tile-count: 4) {
   $tile-size: ($width - $tile-padding * ($tile-count + 1)) / $tile-count;
-  #game-#{$tile-count} { 
+  #game-#{$tile-count} {
     position: relative;
     padding: $tile-padding;
     cursor: default;
@@ -306,17 +306,17 @@ h1.title {
             $newX: ($tile-size) * ($zeroOffsetX) + ($tile-padding * $zeroOffsetX);
             $newY: ($tile-size) * ($zeroOffsetY) + ($tile-padding * $zeroOffsetY);
 
-            &.position-#{$zeroOffsetX}-#{$zeroOffsetY} { 
+            &.position-#{$zeroOffsetX}-#{$zeroOffsetY} {
               @include transform(translate($newX, $newY));
             }
           }
         }
 
-        @for $i from 1 through length($colors) {
-          &.tile-#{power(2, $i)} .tile-inner {
-            background: nth($colors, $i)
-          }
-        }
+        // @for $i from 1 through 15 {
+        //   &.tile-#{$i} .tile-inner {
+        //     background: #EEE4DA
+        //   }
+        // }
         &:last-child {
           margin-right: 0
         }
@@ -350,7 +350,7 @@ h1.title {
   100% {
     opacity: 1;
     @include transform(scale(1));
-  } 
+  }
 }
 
 @include keyframes(pop) {

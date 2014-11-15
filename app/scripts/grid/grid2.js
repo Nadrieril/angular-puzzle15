@@ -1,51 +1,13 @@
 'use strict';
 
 angular.module('Grid', [])
-.factory('GenerateUniqueId', function() {
-    var generateUid = function() {
-        // http://www.ietf.org/rfc/rfc4122.txt
-        // http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
-        var d = new Date().getTime();
-        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = (d + Math.random()*16)%16 | 0;
-            d = Math.floor(d/16);
-            return (c === 'x' ? r : (r&0x7|0x8)).toString(16);
-        });
-        return uuid;
-    };
-    return {
-        next: function() { return generateUid(); }
-    };
-})
-.factory('TileModel', function(GenerateUniqueId) {
+.factory('TileModel', function() {
     var Tile = function(pos, val) {
         this.x      = pos.x;
         this.y      = pos.y;
         this.value  = val;
 
-        this.id = GenerateUniqueId.next();
-        this.merged = null;
-    };
-
-    Tile.prototype.savePosition = function() {
-        this.originalX = this.x;
-        this.originalY = this.y;
-    };
-
-    Tile.prototype.reset = function() {
-        this.merged = null;
-    };
-
-    Tile.prototype.setMergedBy = function(arr) {
-        var self = this;
-        arr.forEach(function(tile) {
-            tile.merged = true;
-            tile.updatePosition(self.getPosition());
-        });
-    };
-
-    Tile.prototype.updateValue = function(newVal) {
-        this.value = newVal;
+        this.id = ""+val; // Somehow fails when id is int
     };
 
     Tile.prototype.updatePosition = function(newPosition) {
@@ -101,68 +63,41 @@ angular.module('Grid', [])
             }
 
             this.forEach(function(x,y) {
-                var tile = service.newTile({x:x,y:y}, (y*service.size+x+1) % (service.size * service.size));
-                self.setCellAt({x:x,y:y}, tile.value === 0 ? null:tile);
+                self.setCellAt({x:x,y:y}, null);
             });
         };
 
         /*
-        * Prepare for traversal
+        * Build the initial starting position
         */
-        this.prepareTiles = function() {
-            this.forEach(function(x,y,tile) {
-                if (tile) {
-                    tile.savePosition();
-                    tile.reset();
+        this.buildStartingPosition = function() {
+            var self = this;
+            this.forEach(function(x,y) {
+                var val = (y*service.size+x+1) % (service.size * service.size);
+                if(val === 0) {
+                    self.setCellAt({x:x,y:y}, null);
+                    service.emptyTilePos = {x:x,y:y};
+                } else {
+                    var tile = service.newTile({x:x,y:y}, val);
+                    self.setCellAt({x:x,y:y}, tile);
                 }
             });
         };
 
-        /*
-        * Due to the fact we calculate the next positions
-        * in order, we need to specify the order in which
-        * we calculate the next positions
-        */
-        this.traversalDirections = function(key) {
+        this.move = function(key) {
             var vector = vectors[key];
-            var positions = {x: [], y: []};
-            for (var x = 0; x < this.size; x++) {
-                positions.x.push(x);
-                positions.y.push(x);
-            }
-
-            if (vector.x > 0) {
-                positions.x = positions.x.reverse();
-            }
-            if (vector.y > 0) {
-                positions.y = positions.y.reverse();
-            }
-
-            return positions;
-        };
-
-
-        /*
-        * Calculate the next position for a tile
-        */
-        this.calculateNextPosition = function(cell, key) {
-            var vector = vectors[key];
-            var previous;
-            var neighbour = {
-                x: cell.x - vector.x,
-                y: cell.y - vector.y
+            var neighbourPos = {
+                x: this.emptyTilePos.x + vector.x,
+                y: this.emptyTilePos.y + vector.y
             };
-
-            if(this.withinGrid(neighbour) && this.cellAvailable(neighbour)) {
-                return {
-                    newPosition: neighbour,
-                    next: null
-                };
+            if(!this.withinGrid(neighbourPos)) {
+                return false;
             } else {
-                return {
-                    newPosition: cell,
-                    next: null
-                };
+                var neighbour = this.getCellAt(neighbourPos);
+                this.moveTile(neighbour, this.emptyTilePos);
+                this.emptyTilePos.y += vector.y;
+                this.emptyTilePos.x += vector.x;
+                return true;
             }
         };
 
@@ -175,47 +110,6 @@ angular.module('Grid', [])
             cell.y >= 0 && cell.y < this.size;
         };
 
-        /*
-        * Is a cell available at a given position
-        */
-        this.cellAvailable = function(cell) {
-            if (this.withinGrid(cell)) {
-                return !this.getCellAt(cell);
-            } else {
-                return null;
-            }
-        };
-
-        /*
-        * Build the initial starting position
-        * with randomly placed tiles
-        */
-        this.buildStartingPosition = function() {
-        };
-
-        /*
-        * Check to see if there are any matches available
-        */
-        this.tileMatchesAvailable = function() {
-            var totalSize = service.size * service.size;
-            for (var i = 0; i < totalSize; i++) {
-                var pos = this._positionToCoordinates(i);
-                var tile = this.tiles[i];
-
-                if (tile) {
-                    // Check all vectors
-                    for (var vectorName in vectors) {
-                        var vector = vectors[vectorName];
-                        var cell = { x: pos.x + vector.x, y: pos.y + vector.y };
-                        var other = this.getCellAt(cell);
-                        if (other && other.value === tile.value) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        };
 
         /*
         * Get a cell at a position
@@ -236,19 +130,15 @@ angular.module('Grid', [])
             if (this.withinGrid(pos)) {
                 var xPos = this._coordinatesToPosition(pos);
                 this.tiles[xPos] = tile;
+                if(tile !== null) {
+                    tile.updatePosition(pos);
+                }
             }
         };
 
         this.moveTile = function(tile, newPosition) {
-            var oldPos = {
-                x: tile.x,
-                y: tile.y
-            };
-
-            this.setCellAt(oldPos, null);
+            this.setCellAt(tile.getPosition(), null);
             this.setCellAt(newPosition, tile);
-
-            tile.updatePosition(newPosition);
         };
 
         /*
@@ -295,62 +185,10 @@ angular.module('Grid', [])
         };
 
         /*
-        * Remove a tile
-        */
-        this.removeTile = function(pos) {
-            pos = this._coordinatesToPosition(pos);
-            delete this.tiles[pos];
-        };
-
-        /*
         * Same position
         */
         this.samePositions = function(a, b) {
             return a.x === b.x && a.y === b.y;
-        };
-
-        /*
-        * Get all the available tiles
-        */
-        this.availableCells = function() {
-            var cells = [],
-            self = this;
-
-            this.forEach(function(x,y) {
-                var foundTile = self.getCellAt({x:x, y:y});
-                if (!foundTile) {
-                    cells.push({x:x,y:y});
-                }
-            });
-
-            return cells;
-        };
-
-        /*
-        * Randomly insert a new tile
-        */
-        this.randomlyInsertNewTile = function() {
-            var cell = this.randomAvailableCell(),
-            tile = this.newTile(cell, 2);
-            this.insertTile(tile);
-        };
-
-        /*
-        * Get a randomly available cell from all the
-        * currently available cells
-        */
-        this.randomAvailableCell = function() {
-            var cells = this.availableCells();
-            if (cells.length > 0) {
-                return cells[Math.floor(Math.random() * cells.length)];
-            }
-        };
-
-        /*
-        * Check to see there are still cells available
-        */
-        this.anyCellsAvailable = function() {
-            return this.availableCells().length > 0;
         };
 
         return this;
