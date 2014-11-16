@@ -1,10 +1,14 @@
 'use strict';
 
-angular.module('Game', ['Grid', 'ngCookies'])
-.service('GameManager', function($q, $timeout, GridService, $cookieStore) {
+angular.module('Game', ['Grid', 'Score', 'ngCookies'])
+.service('GameManager', function($q, $timeout, GridService, $cookieStore, ScoreService) {
 
     this.getHighScore = function() {
-        return parseInt($cookieStore.get('highScore')) || 0;
+        // return parseInt($cookieStore.get('highScore')) || 0;
+        return ScoreService.getHighScore();
+    };
+    this.getCurrentScore = function() {
+        return ScoreService.getCurrentScore();
     };
 
     this.grid = GridService.grid;
@@ -23,6 +27,7 @@ angular.module('Game', ['Grid', 'ngCookies'])
         this.reinit();
         GridService.buildEmptyGameBoard();
         GridService.buildStartingPosition();
+        ScoreService.startGame();
     };
 
     /*
@@ -45,13 +50,18 @@ angular.module('Game', ['Grid', 'ngCookies'])
                         self.reinit();
                         GridService.buildEmptyGameBoard();
                         GridService.buildStartingPosition();
+                        ScoreService.endGame(false);
                         self.spaceDown = true;
                     }
                 } else {
                     self.spaceDown = false;
+                    ScoreService.startGame();
                 }
             }
 
+            if(hasMoved) {
+                // TODO: check if won
+            }
         };
         return $q.when(f());
     };

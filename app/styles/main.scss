@@ -5,7 +5,7 @@
 @import "_functions";
 
 $width: 400px;
-$min-tile-count: 3;
+$min-tile-count: 2;
 $max-tile-count: 6;
 $tile-padding: 15px;
 $tile-radius: 3px;
@@ -30,7 +30,7 @@ $text-color: #776E65;
 $bright-text-color: #f9f6f2;
 
 // DON'T EDIT BELOW
-$transition-time: 100ms;
+$transition-time: 70ms;
 
 .container {
   max-width: 600px;
@@ -143,7 +143,7 @@ h1.title {
 }
 
 .score-container:after {
-  content: "Score";
+  content: "Time";
 }
 
 .best-container:after {
@@ -295,18 +295,12 @@ h1.title {
         transition-property: transform;
         z-index: 2;
 
-        &.tile-merged .tile-inner {
-          @include animation(pop 200ms ease-in);
-        }
+        @for $x from 0 through $tile-count - 1 {
+          @for $y from 0 through $tile-count - 1 {
+            $newX: ($tile-size + $tile-padding) * $x;
+            $newY: ($tile-size + $tile-padding) * $y;
 
-        @for $x from 1 through $tile-count {
-          @for $y from 1 through $tile-count {
-            $zeroOffsetX: $x - 1;
-            $zeroOffsetY: $y - 1;
-            $newX: ($tile-size) * ($zeroOffsetX) + ($tile-padding * $zeroOffsetX);
-            $newY: ($tile-size) * ($zeroOffsetY) + ($tile-padding * $zeroOffsetY);
-
-            &.position-#{$zeroOffsetX}-#{$zeroOffsetY} {
+            &.position-#{$x}-#{$y} {
               @include transform(translate($newX, $newY));
             }
           }

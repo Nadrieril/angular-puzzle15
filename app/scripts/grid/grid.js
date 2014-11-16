@@ -26,14 +26,9 @@ angular.module('Grid', [])
 })
 .provider('GridService', function() {
     this.size = 4; // Default size
-    this.startingTileNumber = 2; // default starting tiles
 
     this.setSize = function(sz) {
         this.size = sz ? sz : 0;
-    };
-
-    this.setStartingTiles = function(num) {
-        this.startingTileNumber = num;
     };
 
     var service = this;
@@ -69,7 +64,7 @@ angular.module('Grid', [])
 
         /*
         * Compute a random solvable permutation of [0,n)]
-        * Source: Wikipedia, "inside-out" variant of the Knuth shuffle.
+        * Inspired from: Wikipedia, "inside-out" variant of the Knuth shuffle.
         */
         function randomSolvablePermutation(n) {
             function r(k) {
@@ -108,7 +103,6 @@ angular.module('Grid', [])
             //     p[1] = c;
             // }
             // p.splice(n*n, 0, 0);
-
 
             return p;
         }

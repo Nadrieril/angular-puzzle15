@@ -5,7 +5,7 @@ angular
 .config(function(GridServiceProvider) {
     GridServiceProvider.setSize(2);
 })
-.controller('GameController', function(GameManager, KeyboardService) {
+.controller('GameController', function(GameManager, KeyboardService, $interval) {
     this.game = GameManager;
 
     this.startGame = function() {
@@ -20,6 +20,12 @@ angular
         this.game.newGame();
     };
 
+    this.updateScores = function() {
+        this.currentScore = this.game.getCurrentScore();
+        this.highScore = this.game.getHighScore();
+    };
+
     this.startGame();
     this.newGame();
+    $interval(_.bind(this.updateScores, this), 100);
 });
