@@ -45,8 +45,9 @@ angular.module('Score', [])
                 if(service.highScore == -1 || score < service.highScore) {
                     service.highScore = score;
                 }
+            } else {
+                TimerService.reset();
             }
-            TimerService.reset();
         };
 
         this.getCurrentScore = function() {

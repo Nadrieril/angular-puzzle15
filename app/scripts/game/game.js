@@ -15,20 +15,25 @@ angular.module('Game', ['Grid', 'Score', 'ngCookies'])
     this.tiles = GridService.tiles;
     this.gameSize = GridService.getSize();
     // this.spaceDown = false;
+    this.win = false;
+    this.playing = false;
 
-    this.reinit = function() {
+    this.initGame = function() {
         this.win = false;
         this.playing = false;
-        this.currentScore = 0;
-        this.highScore = this.getHighScore();
-    };
-    this.reinit();
-
-    this.newGame = function() {
-        this.reinit();
+        ScoreService.endGame(false);
         GridService.buildEmptyGameBoard();
         GridService.buildStartingPosition();
+    };
+
+    this.startGame = function() {
+        this.playing = true;
         ScoreService.startGame();
+    };
+
+    this.newGame = function() {
+        this.initGame();
+        this.startGame();
     };
 
     /*
@@ -40,10 +45,7 @@ angular.module('Game', ['Grid', 'Score', 'ngCookies'])
             if(key == 'space') {
                 if(evt.type == 'keydown') {
                     // if(!self.spaceDown) {
-                        self.reinit();
-                        GridService.buildEmptyGameBoard();
-                        GridService.buildStartingPosition();
-                        ScoreService.endGame(false);
+                        self.initGame();
                         // self.spaceDown = true;
                     // }
                 // } else {
@@ -52,8 +54,7 @@ angular.module('Game', ['Grid', 'Score', 'ngCookies'])
                 }
             } else if(!self.win) {
                 if(!self.playing) {
-                    ScoreService.startGame();
-                    self.playing = true;
+                    self.startGame();
                 }
                 GridService.move(key);
             }

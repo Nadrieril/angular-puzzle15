@@ -3,9 +3,9 @@
   <div id="heading" class="row">
     <h1 class="title">ng-puzzle15</h1>
     <div class="scores-container">
-        <div class="score-container">{{ctrl.currentScore/1000 | number:1}}</div>
+        <div class="score-container">{{ctrl.currentScore/1000 | number:2}}</div>
         <div class="best-container">
-            <span ng-hide="ctrl.highScore == -1">{{ctrl.highScore/1000 | number:1}}</span>
+            <span ng-hide="ctrl.highScore == -1">{{ctrl.highScore/1000 | number:2}}</span>
             <span ng-show="ctrl.highScore == -1">0</span>
         </div>
     </div>

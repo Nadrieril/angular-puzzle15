@@ -17,7 +17,7 @@ angular
     };
 
     this.newGame = function() {
-        this.game.newGame();
+        this.game.initGame();
     };
 
     this.updateScores = function() {
@@ -27,5 +27,5 @@ angular
 
     this.startGame();
     this.newGame();
-    $interval(_.bind(this.updateScores, this), 100);
+    $interval(_.bind(this.updateScores, this), 63);
 });
