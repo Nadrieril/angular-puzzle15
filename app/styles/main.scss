@@ -10,22 +10,9 @@ $max-tile-count: 6;
 $tile-padding: 15px;
 $tile-radius: 3px;
 $tile-font: 'Open Sans', sans-serif;
-$colors:  #EEE4DA, // 2
-          #EAE0C8, // 4
-          #F59563, // 8
-          #3399ff, // 16
-          #ffa333, // 32
-          #cef030, // 64
-          #E8D8CE, // 128
-          #990303, // 256
-          #6BA5DE, // 512
-          #DCAD60, // 1024
-          #B60022; // 2048
 
 $game-container-background: #bbada0;
 $tile-color: #eee4da;
-$tile-gold-color: #edc22e;
-$tile-gold-glow-color: lighten($tile-gold-color, 15%);
 $text-color: #776E65;
 $bright-text-color: #f9f6f2;
 
