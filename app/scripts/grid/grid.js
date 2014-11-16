@@ -62,15 +62,17 @@ angular.module('Grid', [])
             });
         };
 
-        /*
-        * Compute a random solvable permutation of [0,n)]
-        * Inspired from: Wikipedia, "inside-out" variant of the Knuth shuffle.
-        */
-        function randomSolvablePermutation(n) {
-            function r(k) {
-                return Math.floor(Math.random() * k);
-            }
-            var p = [1];
+    /*
+    * Compute a random solvable permutation of [0,n)]
+    * Inspired from: Wikipedia, "inside-out" variant of the Knuth shuffle.
+    */
+    function randomSolvablePermutation(n) {
+        function r(k) {
+            return Math.floor(Math.random() * k);
+        }
+        var p, fixedpts;
+        do {
+            p = [1];
             var evenPerm = true;
 
             // Generate a random permutation of the numbers
@@ -90,22 +92,23 @@ angular.module('Grid', [])
             var x = ib % n, y = (ib - x) / n;
             var evenBlank = (x + y) % 2 === 0;
             evenBlank = evenBlank != (ib%2 === 0); // Why ?
-            console.log({x:x, y:y, i:ib, evenb:evenBlank, evenp:evenPerm});
+            // console.log({x:x, y:y, i:ib, evenb:evenBlank, evenp:evenPerm});
             if(evenBlank != evenPerm) {
                 var c = p[0];
                 p[0] = p[1];
                 p[1] = c;
             }
             p.splice(ib, 0, 0);
-            // if(!evenPerm) {
-            //     var c = p[0];
-            //     p[0] = p[1];
-            //     p[1] = c;
-            // }
-            // p.splice(n*n, 0, 0);
 
-            return p;
-        }
+            fixedpts = 0;
+            for (i = 0; i < n*n-1; i++) {
+                if(p[i] == i+1)
+                    fixedpts++;
+            }
+        } while(fixedpts == n*n-1);
+
+        return p;
+    }
 
         /*
         * Build the initial starting position
