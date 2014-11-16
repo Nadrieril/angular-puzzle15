@@ -27,36 +27,30 @@ angular.module('Score', [])
         }
     };
 })
-.provider('ScoreService', function() {
-    var service = this;
-
+.service('ScoreService', function(TimerService) {
     this.lastScores = [];
     this.highScore = -1;
 
-    this.$get = function(TimerService) {
-        this.startGame = function() {
-            TimerService.start();
-        };
-        this.endGame = function(won) {
-            TimerService.stop();
-            if(won) {
-                var score = TimerService.getTime();
-                service.lastScores.push(score);
-                if(service.highScore == -1 || score < service.highScore) {
-                    service.highScore = score;
-                }
-            } else {
-                TimerService.reset();
+    this.startGame = function() {
+        TimerService.start();
+    };
+    this.endGame = function(won) {
+        TimerService.stop();
+        if(won) {
+            var score = TimerService.getTime();
+            this.lastScores.push(score);
+            if(this.highScore == -1 || score < this.highScore) {
+                this.highScore = score;
             }
-        };
+        } else {
+            TimerService.reset();
+        }
+    };
 
-        this.getCurrentScore = function() {
-            return TimerService.getTime();
-        };
-        this.getHighScore = function() {
-            return service.highScore;
-        };
-
-        return this;
+    this.getCurrentScore = function() {
+        return TimerService.getTime();
+    };
+    this.getHighScore = function() {
+        return this.highScore;
     };
 });
