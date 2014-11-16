@@ -31,7 +31,7 @@ angular.module('Score', [])
     var service = this;
 
     this.lastScores = [];
-    this.highScore = 0;
+    this.highScore = -1;
 
     this.$get = function(TimerService) {
         this.startGame = function() {
@@ -42,7 +42,7 @@ angular.module('Score', [])
             if(won) {
                 var score = TimerService.getTime();
                 service.lastScores.push(score);
-                if(service.highScore === 0 || score < service.highScore) {
+                if(service.highScore == -1 || score < service.highScore) {
                     service.highScore = score;
                 }
             }
