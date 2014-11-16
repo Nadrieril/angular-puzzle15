@@ -10,6 +10,7 @@ angular.module('Game', ['Grid', 'ngCookies'])
     this.grid = GridService.grid;
     this.tiles = GridService.tiles;
     this.gameSize = GridService.getSize();
+    this.spaceDown = false;
 
     this.reinit = function() {
         this.win = false;
@@ -19,22 +20,38 @@ angular.module('Game', ['Grid', 'ngCookies'])
     this.reinit();
 
     this.newGame = function() {
+        this.reinit();
         GridService.buildEmptyGameBoard();
         GridService.buildStartingPosition();
-        this.reinit();
     };
 
     /*
     * The game loop
     */
-    this.move = function(key) {
+    this.keyEvt = function(key, evt) {
         var self = this;
         var f = function() {
             if(self.win) {
                 return false;
             }
             var hasWon = false;
-            var hasMoved = GridService.move(key);
+            var hasMoved = false;
+
+            if(key != 'space') {
+                hasMoved = GridService.move(key);
+            } else {
+                if(evt.type == 'keydown') {
+                    if(!self.spaceDown) {
+                        self.reinit();
+                        GridService.buildEmptyGameBoard();
+                        GridService.buildStartingPosition();
+                        self.spaceDown = true;
+                    }
+                } else {
+                    self.spaceDown = false;
+                }
+            }
+
         };
         return $q.when(f());
     };
