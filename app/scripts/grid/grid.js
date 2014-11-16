@@ -86,26 +86,28 @@ angular.module('Grid', [])
                 // These two operations can be done in only two instructions, as
                 // follows.
                 p[i] = p[j];
-                p[j] = i+1; // Numbers from 1 to -1 instead of 0 to n-2
+                p[j] = i+1; // Numbers from 1 to n*n-1 instead of 0 to n*n-2
                 evenPerm = (i==j) == evenPerm;
             }
 
             // Insert the blank
-            // var ib = r(n*n);
-            // var x = ib % n, y = (ib - x) / n;
-            // var evenBlank = (x + y) % 2 === 0;
-            // if(evenBlank != evenPerm) {
-            //     var c = p[0];
-            //     p[0] = p[1];
-            //     p[1] = c;
-            // }
-            // p.splice(i, 0, 0);
-            if(!evenPerm) {
+            var ib = r(n*n);
+            var x = ib % n, y = (ib - x) / n;
+            var evenBlank = (x + y) % 2 === 0;
+            evenBlank = evenBlank != (ib%2 === 0); // Why ?
+            console.log({x:x, y:y, i:ib, evenb:evenBlank, evenp:evenPerm});
+            if(evenBlank != evenPerm) {
                 var c = p[0];
                 p[0] = p[1];
                 p[1] = c;
             }
-            p.splice(n*n, 0, 0);
+            p.splice(ib, 0, 0);
+            // if(!evenPerm) {
+            //     var c = p[0];
+            //     p[0] = p[1];
+            //     p[1] = c;
+            // }
+            // p.splice(n*n, 0, 0);
 
 
             return p;
@@ -119,14 +121,15 @@ angular.module('Grid', [])
             var p = randomSolvablePermutation(service.size);
 
             this.forEach(function(x,y) {
-                var i = (y*service.size+x+1) % (service.size * service.size);
+                var pos = {x:x,y:y};
+                var i = self._coordinatesToPosition(pos);
                 var val = p[i];
                 if(val === 0) {
-                    self.setCellAt({x:x,y:y}, null);
-                    service.emptyTilePos = {x:x,y:y};
+                    self.setCellAt(pos, null);
+                    service.emptyTilePos = pos;
                 } else {
-                    var tile = service.newTile({x:x,y:y}, val);
-                    self.setCellAt({x:x,y:y}, tile);
+                    var tile = service.newTile(pos, val);
+                    self.setCellAt(pos, tile);
                 }
             });
         };
