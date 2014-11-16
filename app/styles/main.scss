@@ -201,8 +201,7 @@ h1.title {
   box-sizing: border-box;
 
   &.ng-enter {
-    @include transition(all 1000ms ease-in);
-    @include transform(translate(0, 100%));
+    @include transition(all 500ms ease-in);
     opacity: 0;
   }
 

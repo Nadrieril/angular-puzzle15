@@ -27,41 +27,6 @@ angular.module('Grid', [])
 .provider('GridService', function() {
     this.size = 4; // Default size
 
-    this.setSize = function(sz) {
-        this.size = sz ? sz : 0;
-    };
-
-    var service = this;
-
-    this.$get = function(TileModel) {
-        this.grid   = [];
-        this.tiles  = [];
-
-        // Private things
-        var vectors = {
-            'left': { x: -1, y: 0 },
-            'right': { x: 1, y: 0 },
-            'up': { x: 0, y: -1 },
-            'down': { x: 0, y: 1 }
-        };
-
-        this.getSize = function() {
-            return service.size;
-        };
-
-        // Build game board
-        this.buildEmptyGameBoard = function() {
-            var self = this;
-            // Initialize our grid
-            for (var x = 0; x < service.size * service.size; x++) {
-                this.grid[x] = null;
-            }
-
-            this.forEach(function(x,y) {
-                self.setCellAt({x:x,y:y}, null);
-            });
-        };
-
     /*
     * Compute a random solvable permutation of [0,n)]
     * Inspired from: Wikipedia, "inside-out" variant of the Knuth shuffle.
@@ -110,11 +75,47 @@ angular.module('Grid', [])
         return p;
     }
 
+    this.setSize = function(sz) {
+        this.size = sz ? sz : 0;
+    };
+
+    var service = this;
+
+    this.$get = function(TileModel) {
+        this.grid   = [];
+        this.tiles  = [];
+
+        // Private things
+        var vectors = {
+            'left': { x: -1, y: 0 },
+            'right': { x: 1, y: 0 },
+            'up': { x: 0, y: -1 },
+            'down': { x: 0, y: 1 }
+        };
+
+        this.getSize = function() {
+            return service.size;
+        };
+
+        // Build game board
+        this.buildEmptyGameBoard = function() {
+            var self = this;
+            // Initialize our grid
+            for (var x = 0; x < service.size * service.size; x++) {
+                this.grid[x] = null;
+            }
+
+            this.forEach(function(x,y) {
+                self.setCellAt({x:x,y:y}, null);
+            });
+        };
+
         /*
         * Build the initial starting position
         */
         this.buildStartingPosition = function() {
             var self = this;
+            this.nbCorrectTiles = 0;
             var p = randomSolvablePermutation(service.size);
 
             this.forEach(function(x,y) {
@@ -122,11 +123,13 @@ angular.module('Grid', [])
                 var i = self._coordinatesToPosition(pos);
                 var val = p[i];
                 if(val === 0) {
-                    self.setCellAt(pos, null);
                     service.emptyTilePos = pos;
                 } else {
                     var tile = service.newTile(pos, val);
-                    self.setCellAt(pos, tile);
+                    self.insertTile(tile);
+                    if(self._isCorrect(tile)) {
+                        self.nbCorrectTiles++;
+                    }
                 }
             });
         };
@@ -141,11 +144,21 @@ angular.module('Grid', [])
                 return false;
             } else {
                 var neighbour = this.getCellAt(neighbourPos);
+
+                if(this._isCorrect(neighbour))
+                    this.nbCorrectTiles--;
                 this.moveTile(neighbour, this.emptyTilePos);
+                if(this._isCorrect(neighbour))
+                    this.nbCorrectTiles++;
+
                 this.emptyTilePos.y += vector.y;
                 this.emptyTilePos.x += vector.x;
                 return true;
             }
+        };
+
+        this.hasWon = function() {
+            return this.nbCorrectTiles == service.size*service.size - 1;
         };
 
 
@@ -217,6 +230,14 @@ angular.module('Grid', [])
         */
         this._coordinatesToPosition = function(pos) {
             return (pos.y * service.size) + pos.x;
+        };
+
+        this._expectedValue = function(pos) {
+            return (this._coordinatesToPosition(pos) + 1) % (service.size*service.size);
+        };
+
+        this._isCorrect = function(tile) {
+            return tile.value == this._expectedValue(tile);
         };
 
         /*

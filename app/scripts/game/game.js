@@ -59,8 +59,9 @@ angular.module('Game', ['Grid', 'Score', 'ngCookies'])
                 }
             }
 
-            if(hasMoved) {
-                // TODO: check if won
+            if(GridService.hasWon()) {
+                ScoreService.endGame(true);
+                self.win = true;
             }
         };
         return $q.when(f());
