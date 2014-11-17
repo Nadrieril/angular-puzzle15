@@ -1,7 +1,7 @@
 'use strict';
 
 angular
-.module('puzzle15.app', ['Game', 'Grid', 'Keyboard', 'ngAnimate', 'ngCookies'])
+.module('puzzle15App', ['Game', 'Grid', 'Keyboard', 'ngAnimate', 'ngCookies'])
 .config(function(GridServiceProvider) {
     GridServiceProvider.setSize(4);
 })
