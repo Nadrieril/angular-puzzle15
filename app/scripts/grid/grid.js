@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('Grid', [])
+angular.module('Grid', ['Settings'])
 .factory('TileModel', function() {
     var Tile = function(pos, val) {
         this.x      = pos.x;
@@ -81,7 +81,7 @@ angular.module('Grid', [])
 
     var service = this;
 
-    this.$get = function(TileModel) {
+    this.$get = function(TileModel, SettingsService) {
         this.grid   = [];
         this.tiles  = [];
 
@@ -136,9 +136,10 @@ angular.module('Grid', [])
 
         this.move = function(key) {
             var vector = vectors[key];
+            var inv = SettingsService.inverted ? -1 : +1;
             var neighbourPos = {
-                x: this.emptyTilePos.x + vector.x,
-                y: this.emptyTilePos.y + vector.y
+                x: this.emptyTilePos.x + inv*vector.x,
+                y: this.emptyTilePos.y + inv*vector.y
             };
             if(!this.withinGrid(neighbourPos)) {
                 return false;
@@ -151,8 +152,8 @@ angular.module('Grid', [])
                 if(this._isCorrect(neighbour))
                     this.nbCorrectTiles++;
 
-                this.emptyTilePos.y += vector.y;
-                this.emptyTilePos.x += vector.x;
+                this.emptyTilePos.y += inv*vector.y;
+                this.emptyTilePos.x += inv*vector.x;
                 return true;
             }
         };
