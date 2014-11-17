@@ -56,7 +56,7 @@ angular.module('Grid', ['Settings'])
             var ib = r(n*n);
             var x = ib % n, y = (ib - x) / n;
             var evenBlank = (x + y) % 2 === 0;
-            evenBlank = evenBlank != (ib%2 === 0); // Why ?
+            evenBlank = evenBlank != ((n*n-ib)%2 === 0);
             // console.log({x:x, y:y, i:ib, evenb:evenBlank, evenp:evenPerm});
             if(evenBlank != evenPerm) {
                 var c = p[0];
