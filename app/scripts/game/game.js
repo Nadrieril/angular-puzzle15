@@ -56,7 +56,9 @@ angular.module('Game', ['Grid', 'Score', 'ngCookies', 'Settings'])
                 if(!self.playing) {
                     self.startGame();
                 }
-                GridService.move(key);
+                var hasMoved = GridService.move(key);
+                if(hasMoved)
+                    ScoreService.moved();
             }
 
             if(GridService.hasWon()) {

@@ -82,9 +82,10 @@ h1.title {
 .scores-container {
   text-align: right;
   float: right;
+  margin-left: 10px;
 }
 
-.score-container, .best-container {
+.score-container, .moves-container, .best-container {
   $inner-height: 25px;
 
   min-height: 2.5em;
@@ -114,19 +115,10 @@ h1.title {
     text-align: center;
     color: $tile-color;
   }
+}
 
-  .score-addition {
-    position: absolute;
-    right: 30px;
-    color: red;
-    font-size: $inner-height;
-    line-height: $inner-height;
-    font-weight: bold;
-    color: rgba($text-color, .9);
-    z-index: 100;
-    @include animation(move-up 600ms ease-in);
-    @include animation-fill-mode(both);
-  }
+.moves-container:after {
+  content: "Moves";
 }
 
 .score-container:after {

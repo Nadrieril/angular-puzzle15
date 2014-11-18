@@ -3,10 +3,17 @@
     <div id="heading" class="row">
         <h1 class="title">ng-puzzle15</h1>
         <div class="scores-container">
-            <div class="score-container">{{ctrl.currentScore/1000 | number:2}}</div>
+            <div class="score-container">{{ctrl.currentScore.time/1000 | number:2}}</div>
             <div class="best-container">
-                <span ng-hide="ctrl.highScore == -1">{{ctrl.highScore/1000 | number:2}}</span>
-                <span ng-show="ctrl.highScore == -1">0</span>
+                <span ng-hide="ctrl.highScore.time == -1">{{ctrl.highScore.time/1000 | number:2}}</span>
+                <span ng-show="ctrl.highScore.time == -1">0</span>
+            </div>
+        </div>
+        <div class="scores-container">
+            <div class="moves-container">{{ctrl.currentScore.moves}}</div>
+            <div class="best-container">
+                <span ng-hide="ctrl.highScore.moves == -1">{{ctrl.highScore.moves}}</span>
+                <span ng-show="ctrl.highScore.moves == -1">0</span>
             </div>
         </div>
     </div>
